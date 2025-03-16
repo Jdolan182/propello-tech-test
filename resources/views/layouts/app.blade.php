@@ -15,9 +15,16 @@
         <div class="min-h-screen bg-gray-100">
             <navigation :user="{{ Auth::user()?->toJson() ?? '[]' }}"></navigation>
 
+          
+
             <main>
                 <div class="py-12">
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        @if(flash()->message)
+                            <div align="center">
+                                {{ flash()->message }}
+                            </div>
+                        @endif
                         @yield('content')
                     </div>
                 </div>

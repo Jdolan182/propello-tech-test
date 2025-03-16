@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
+use App\Models\Tags;
 use App\Models\Task;
+use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\CreateTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
@@ -29,7 +31,10 @@ class TaskController extends Controller
     {
         $this->authorize('update', $task);
 
-        return view('tasks.edit', compact('task'));
+        $tags = $task->tags()->get();
+        $tagOptions = auth()->user()->tags()->whereNotIn('id', $tags->pluck('id'))->get() ?? [];
+        
+        return view('tasks.edit', compact('task', 'tags', 'tagOptions'));
     }
 
     public function store(CreateTaskRequest $request): RedirectResponse
@@ -41,6 +46,8 @@ class TaskController extends Controller
             )
         );
 
+        flash('Task has been created');
+
         return redirect()->to(route('tasks.home'));
     }
 
@@ -50,6 +57,8 @@ class TaskController extends Controller
 
         $task->update($request->validated());
 
+        flash('Task has updated successfully');
+
         return redirect()->to(route('tasks.home'));
     }
 
@@ -58,6 +67,9 @@ class TaskController extends Controller
         $this->authorize('delete', $task);
 
         $task->delete();
+
+        flash('Task has been deleted');
+
 
         return redirect()->to(route('tasks.home'));
     }
@@ -69,6 +81,29 @@ class TaskController extends Controller
         $task->complete = !$task->complete;
         $task->save();
 
+        flash('Task has been marked as completed');
+
         return redirect()->to(route('tasks.home'));
+    }
+
+    public function addTags(Request $request, Task $task)
+    {
+
+        $task->tags()->attach($request->tags);
+
+        flash('Tag(s) have been added to the task');
+
+
+        return redirect()->to(route('tasks.edit', $task));
+    }
+
+    public function removeTag(Request $request, Task $task)
+    {
+
+        $task->tags()->detach($request->tag);
+
+        flash('Tag has been removed from the task');
+
+        return redirect()->to(route('tasks.edit', $task));
     }
 }

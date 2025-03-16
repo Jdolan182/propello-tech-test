@@ -9,6 +9,16 @@
                         </a>
                     </div>
                 </div>
+                
+                <div class="mt-4">
+                    <a class="px-4" href="/">
+                        Tasks
+                    </a>
+                    <a class="px-4 " href="/tags">
+                        Tags
+                    </a>
+
+                </div>
 
                 <div v-if="loggedIn" class="hidden sm:flex sm:items-center sm:ms-6">
                     <div class="relative" @click="toggleOpen">

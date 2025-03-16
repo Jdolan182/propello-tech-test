@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TagsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +27,20 @@ Route::middleware(['auth', 'verified'])
         Route::post('edit/{task}', 'update')->name('update');
         Route::get('delete/{task}', 'destroy')->name('destroy');
         Route::get('complete/{task}', 'complete')->name('complete');
+        Route::post('addTags/{task}', 'addTags')->name('addTags');
+        Route::get('removeTag/{task}', 'removeTag')->name('removeTag');
+    });
+
+Route::middleware(['auth', 'verified'])
+    ->name('tags.')
+    ->controller(TagsController::class)
+    ->group(function() {
+        Route::get('/tags', 'index')->name('index');
+        Route::get('tags/create', 'create')->name('create');
+        Route::post('tags/create', 'store')->name('store');
+        Route::get('tags/edit/{tag}', 'edit')->name('edit');
+        Route::post('tags/edit/{tag}', 'update')->name('update');
+        Route::get('tags/delete/{tag}', 'destroy')->name('destroy');
     });
 
 Route::middleware('auth')
